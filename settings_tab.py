@@ -51,11 +51,11 @@ class SettingsTab(QWidget):
                     "lowercase": self.lowercase_checkbox.isChecked(),
                     "notification": self.notification_checkbox.isChecked(), 
                     "sound": self.sound_checkbox.isChecked()}
-        with open("settings.json", "w") as file:
+        with open("data/settings.json", "w") as file:
             json.dump(settings, file)
     
     def load_settings(self):
-        with open("settings.json", "r") as file:
+        with open("data/settings.json", "r") as file:
             settings = json.load(file)
             self.set_hotkey_button.setText(settings["hotkey"])
             self.lowercase_checkbox.setChecked(settings["lowercase"])

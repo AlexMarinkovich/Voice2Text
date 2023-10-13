@@ -8,7 +8,7 @@ a = Analysis(
     ['Voice2Text.py'],
     pathex=[],
     binaries=[],
-    datas=[('phrase_replacements.json', '.'), ('settings.json', '.'), ('sound.wav', '.')],
+    datas=[('data/phrase_replacements.json', '.'), ('data/settings.json', '.'), ('data/sound.wav', '.')],
     hiddenimports=['plyer', 'plyer.platforms.win.notification'],
     hookspath=[],
     hooksconfig={},
@@ -37,7 +37,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['icon.ico'],
+    icon=['data/icon.ico'],
 )
 
 coll = COLLECT(

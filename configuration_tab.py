@@ -69,11 +69,11 @@ class ConfigurationTab(QWidget):
             if phrase and replacement:
                 phrase_replacements.append([phrase.text(), replacement.text()])
         
-        with open("phrase_replacements.json", "w") as file:
+        with open("data/phrase_replacements.json", "w") as file:
             json.dump(phrase_replacements, file)
 
     def load_config(self):
-        with open("phrase_replacements.json", "r") as file:
+        with open("data/phrase_replacements.json", "r") as file:
             phrase_replacements = json.load(file)
             for phrase, replacement in phrase_replacements:
                 self.add_entry(phrase, replacement)

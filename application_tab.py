@@ -38,7 +38,7 @@ class ApplicationTab(QWidget):
         clear_button.clicked.connect(lambda _: self.console.setText(""))
 
     def copy_speech(self):
-        with open("settings.json", "r") as file:
+        with open("data/settings.json", "r") as file:
             settings = json.load(file)
 
         recognizer = sr.Recognizer()
@@ -88,7 +88,7 @@ class ApplicationTab(QWidget):
             if settings["notification"]: notification.notify(title="Voice2Text", message=error_message[:256], timeout=2)
             return
 
-        with open("phrase_replacements.json", "r") as file:
+        with open("data/phrase_replacements.json", "r") as file:
             phrase_replacements = json.load(file)
             for phrase, replacement in phrase_replacements:
                 text = text.replace(phrase, replacement)
@@ -100,7 +100,7 @@ class ApplicationTab(QWidget):
         self.console.setText(f"{self.console.toPlainText()}\n{copy_message}")
         self.console.verticalScrollBar().setValue(self.console.verticalScrollBar().maximum()) # Automatically scroll down
         
-        if settings["sound"]: QSound.play('sound.wav')
+        if settings["sound"]: QSound.play('data/sound.wav')
         if settings["notification"]: notification.notify(title="Voice2Text", message=copy_message[:256], timeout=2)
 
         
