@@ -1,6 +1,7 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTabWidget
 from PyQt5.QtCore import QTimer
+from PyQt5.QtGui import QIcon
 import keyboard
 
 from application_tab import ApplicationTab
@@ -11,9 +12,10 @@ from relative_sizes import VW
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-
+        
         self.setFixedSize(36*VW, 24*VW)
         self.setWindowTitle("Voice2Text")
+        self.setWindowIcon(QIcon("data/icon.ico"))
 
         self.central_widget = QTabWidget()
         self.setCentralWidget(self.central_widget)
