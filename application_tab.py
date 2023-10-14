@@ -37,70 +37,57 @@ class ApplicationTab(QWidget):
         clear_button.setFixedSize(12*VW, 3*VW)
         clear_button.clicked.connect(lambda _: self.console.setText(""))
 
+        # Prepare for the use of speech_recognition 
+        self.recognizer = sr.Recognizer()
+        self.microphone = sr.Microphone()
+
+    # handle notifications and updating the console
+    def announce(self, text, notify=False, newlines=1):
+        self.console.setText(self.console.toPlainText() + text + "\n"*newlines)
+        if notify: notification.notify(title="Voice2Text", message=text[:256], timeout=2)
+        self.console.verticalScrollBar().setValue(self.console.verticalScrollBar().maximum()) # Automatically scroll down
+
     def copy_speech(self):
         with open("data/settings.json", "r") as file:
             settings = json.load(file)
-
-        recognizer = sr.Recognizer()
-
-        if self.console.toPlainText(): self.console.setText(f"{self.console.toPlainText()}\n\nSay something")
-        else: self.console.setText("Say something")
-        self.console.verticalScrollBar().setValue(self.console.verticalScrollBar().maximum()) # Automatically scroll down
-
+        
+        self.announce("Say something", False)
         QCoreApplication.processEvents()
 
         try:
-            with sr.Microphone() as source:
-                audio = recognizer.listen(source)
+            with self.microphone as source:
+                audio = self.recognizer.listen(source)
+                text = self.recognizer.recognize_google(audio)
+            
+            if settings["lowercase"]: text = text.lower()
+            self.announce(f"You said: {text}", False)
+            
+        except sr.UnknownValueError:
+            self.announce("Could not understand the audio", settings["notification"], 2)
+        
+        except sr.WaitTimeoutError:
+            self.announce("Timeout: No audio input detected", settings["notification"], 2)
 
-            try:
-                text = recognizer.recognize_google(audio)
-                if settings["lowercase"]: text = text.lower()
-                self.console.setText(f"{self.console.toPlainText()}\nYou said: {text}")
-            
-            except sr.UnknownValueError:
-                error_message = "Could not understand the audio"
-                self.console.setText(f"{self.console.toPlainText()}\n{error_message}")
-                if settings["notification"]: notification.notify(title="Voice2Text", message=error_message, timeout=2)
-                return
-            
-            except sr.RequestError as e:
-                error_message = f"Could not request results from Google Speech Recognition service: {e}"
-                self.console.setText(f"{self.console.toPlainText()}\n{error_message}")
-                if settings["notification"]: notification.notify(title="Voice2Text", message=error_message[:256], timeout=2)
-                return
+        except sr.RequestError as e:
+            self.announce(f"Could not request results from Google Speech Recognition service: {e}", settings["notification"], 2)
 
         except PermissionError:
-            error_message = "Permission to access the microphone was denied"
-            self.console.setText(f"{self.console.toPlainText()}\n{error_message}")
-            if settings["notification"]: notification.notify(title="Voice2Text", message=error_message, timeout=2)
-            return
+            self.announce("Permission to access the microphone was denied", settings["notification"], 2)
 
         except OSError:
-            error_message = "No microphone detected or microphone is not working"
-            self.console.setText(f"{self.console.toPlainText()}\n{error_message}")
-            if settings["notification"]: notification.notify(title="Voice2Text", message=error_message, timeout=2)
-            return
+            self.announce("No microphone detected or microphone is not working", settings["notification"], 2)
 
         except Exception as e:
-            error_message = f"Error: {e}"
-            self.console.setText(f"{self.console.toPlainText()}\n{error_message}")
-            if settings["notification"]: notification.notify(title="Voice2Text", message=error_message[:256], timeout=2)
-            return
-
-        with open("data/phrase_replacements.json", "r") as file:
-            phrase_replacements = json.load(file)
-            for phrase, replacement in phrase_replacements:
-                text = text.replace(phrase, replacement)
+            self.announce(f"Error: {e}", settings["notification"], 2)
         
-
-        copy_message = f"Copied: {text}"
-
-        pyperclip.copy(text)
-        self.console.setText(f"{self.console.toPlainText()}\n{copy_message}")
-        self.console.verticalScrollBar().setValue(self.console.verticalScrollBar().maximum()) # Automatically scroll down
-        
-        if settings["sound"]: QSound.play('data/sound.wav')
-        if settings["notification"]: notification.notify(title="Voice2Text", message=copy_message[:256], timeout=2)
+        else:
+            with open("data/phrase_replacements.json", "r") as file:
+                phrase_replacements = json.load(file)
+                for phrase, replacement in phrase_replacements:
+                    text = text.replace(phrase, replacement)
+            
+            pyperclip.copy(text)
+            self.announce(f"Copied: {text}", settings["notification"], 2)
+            if settings["sound"]: QSound.play('data/sound.wav')
 
         
