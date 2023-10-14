@@ -56,7 +56,7 @@ class ApplicationTab(QWidget):
 
         try:
             with self.microphone as source:
-                audio = self.recognizer.listen(source)
+                audio = self.recognizer.listen(source, timeout=3, phrase_time_limit=3)
                 text = self.recognizer.recognize_google(audio)
             
             if settings["lowercase"]: text = text.lower()
