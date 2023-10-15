@@ -30,7 +30,7 @@ class MainWindow(QMainWindow):
 
         # Make the keybind only work when the application tab is open
         self.central_widget.currentChanged.connect(self.tab_changed)
-        self.tab_changed(0) # This is ran because the application tab is opened on start up
+        self.tab_changed(0)
         
     def tab_changed(self, tab_number):
         if tab_number == 0:

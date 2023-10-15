@@ -8,7 +8,7 @@ a = Analysis(
     ['Voice2Text.py'],
     pathex=[],
     binaries=[],
-    datas=[('data/phrase_replacements.json', '.'), ('data/settings.json', '.'), ('data/sound.wav', '.')],
+    datas=[('data', '.')],
     hiddenimports=['plyer', 'plyer.platforms.win.notification'],
     hookspath=[],
     hooksconfig={},
