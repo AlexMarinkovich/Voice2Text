@@ -38,8 +38,8 @@ class ApplicationTab(QWidget):
         clear_button.clicked.connect(lambda _: self.console.setText(""))
 
         # Prepare for the use of speech_recognition 
-        self.recognizer = sr.Recognizer()
         self.microphone = sr.Microphone()
+        self.recognizer = sr.Recognizer()
 
     # handle notifications and updating the console
     def announce(self, text, notify=False, newlines=1):
@@ -51,14 +51,20 @@ class ApplicationTab(QWidget):
         with open("data/settings.json", "r") as file:
             settings = json.load(file)
         
+        # Convert mic sensitivity percentage to energy threshold level
+        self.recognizer.energy_threshold = int(16000 / (settings["mic_sensitivity"] - 45))
+
         self.announce("Say something", False)
         QCoreApplication.processEvents()
 
         try:
             with self.microphone as source:
-                audio = self.recognizer.listen(source, timeout=3, phrase_time_limit=3)
+                audio = self.recognizer.listen(source, timeout=3)
+                self.announce("Processing...", False)
+                QCoreApplication.processEvents()
                 text = self.recognizer.recognize_google(audio)
             
+            self.console.setText(self.console.toPlainText()[:-28])
             if settings["lowercase"]: text = text.lower()
             self.announce(f"You said: {text}", False)
             
@@ -89,5 +95,3 @@ class ApplicationTab(QWidget):
             pyperclip.copy(text)
             self.announce(f"Copied: {text}", settings["notification"], 2)
             if settings["sound"]: QSound.play('data/sound.wav')
-
-        
