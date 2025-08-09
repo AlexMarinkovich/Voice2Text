@@ -1,2 +1,2 @@
 # Voice2Text
-Voice2Text is a feature-packed transcription tool unlike any other. Speak into it, and it will instantly copy your speech to the clipboard. This application also includes a phrase replacement system and the ability to run in the background, enhancing your productivity. To use the app, download the executable here: https://drive.google.com/drive/folders/1ChcZ0Dlz2BX0a_nfOGQCYx5hPyDFf6Lz?usp=sharing
+Voice2Text is a feature-packed transcription tool unlike any other. Speak into it, and it will instantly copy your speech to the clipboard. This application also includes a phrase replacement system and the ability to run in the background, enhancing your productivity.
